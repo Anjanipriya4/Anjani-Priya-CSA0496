@@ -1,0 +1,54 @@
+#include <stdio.h> 
+#include <stdlib.h> 
+ 
+#define FRAME_COUNT 3 
+#define PAGE_COUNT 10 
+ 
+int findOptimalPage(int pages[], int currentIndex, int future[], int n) { 
+    int farthest = currentIndex; 
+    int optimalPage = -1; 
+ 
+    for (int i = 0; i < FRAME_COUNT; i++) { 
+        int j; 
+        for (j = currentIndex; j < n; j++) { 
+            if (pages[i] == future[j]) { 
+                if (j > farthest) { 
+                    farthest = j; 
+                    optimalPage = i; 
+                } 
+                break; 
+            } 
+        } 
+        if (j == n) { 
+            return i; // Page not found in future references 
+        } 
+    } 
+    return optimalPage; 
+} 
+ 
+void optimalPaging(int pages[], int n) { 
+    int frames[FRAME_COUNT] = {-1, -1, -1}; 
+    int pageFaults = 0; 
+ 
+    for (int i = 0; i < n; i++) { 
+        int j; 
+        for (j = 0; j < FRAME_COUNT; j++) { 
+            if (frames[j] == pages[i]) { 
+                break; // Page is already in a frame 
+            } 
+        } 
+ 
+        if (j == FRAME_COUNT) { // Page fault 
+            int optimalPage = findOptimalPage(frames, i + 1, pages, n); 
+            frames[optimalPage] = pages[i]; 
+            pageFaults++; 
+        } 
+} 
+printf("Total Page Faults: %d\n", pageFaults); 
+} 
+int main() { 
+int pages[] = {0, 1, 2, 0, 3, 0, 4, 2, 3, 0}; 
+int n = sizeof(pages) / sizeof(pages[0]); 
+optimalPaging(pages, n); 
+return 0; 
+}
