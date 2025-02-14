@@ -1,0 +1,54 @@
+#include <stdio.h> 
+#include <stdlib.h> 
+#define FRAME_SIZE 3 
+#define PAGE_SIZE 10 
+int frames[FRAME_SIZE]; 
+int pageFaults = 0; 
+int isPageInFrames(int page) { 
+for (int i = 0; i < FRAME_SIZE; i++) { 
+if (frames[i] == page) { 
+return 1; 
+} 
+} 
+return 0; 
+} 
+ 
+int getLRUPage(int pages[], int currentIndex) { 
+    int lruIndex = -1; 
+    int lruTime = -1; 
+ 
+    for (int i = 0; i < FRAME_SIZE; i++) { 
+        int j; 
+        for (j = currentIndex - 1; j >= 0; j--) { 
+            if (frames[i] == pages[j]) { 
+                if (j < lruTime || lruTime == -1) { 
+                    lruTime = j; 
+                    lruIndex = i; 
+                } 
+                break; 
+            } 
+        } 
+    } 
+    return lruIndex; 
+} 
+ 
+void LRU(int pages[], int n) { 
+    for (int i = 0; i < n; i++) { 
+        if (!isPageInFrames(pages[i])) { 
+            int lruIndex = getLRUPage(pages, i); 
+            if (lruIndex == -1) { 
+                frames[pageFaults % FRAME_SIZE] = pages[i]; 
+            } else { 
+                frames[lruIndex] = pages[i]; 
+            } 
+            pageFaults++; 
+} 
+} 
+} 
+int main() { 
+int pages[] = {0, 1, 2, 0, 3, 0, 4, 1, 0, 1, 2, 3, 4}; 
+int n = sizeof(pages) / sizeof(pages[0]); 
+LRU(pages, n); 
+printf("Total Page Faults: %d\n", pageFaults); 
+return 0; 
+}
